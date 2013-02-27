@@ -107,8 +107,8 @@ declare -A engine_versions
 declare -A engine_defaults
 declare -A engine_requests
 
-engine_defaults["node"]="0.4.7"
-engine_defaults["npm"]="1.0.106"
+engine_defaults["node"]="0.8.x"
+engine_defaults["npm"]="1.2.x"
 
 engine_versions["node"]=$(manifest_versions "nodejs")
 engine_requests["node"]=$(package_engine_version "node")
@@ -164,8 +164,8 @@ cp "$VENDORED_NODE/bin/node" "$BUILD_DIR/bin/node"
 # setting up paths for building
 PATH="$VENDORED_SCONS:$VENDORED_NODE/bin:$PATH"
 INCLUDE_PATH="$VENDORED_NODE/include"
-export CPATH="$INCLUDE_PATH:$CPATH"
-export CPPPATH="$INCLUDE_PATH:$CPPPATH"
+export CPATH="$INCLUDE_PATH"
+export CPPPATH="$INCLUDE_PATH"
 
 # install dependencies with npm
 echo "-----> Installing dependencies with npm"
