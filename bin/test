@@ -37,8 +37,7 @@ testDangerousRangeGreaterThan() {
 
 testStableVersion() {
   compile "stable-node"
-  assertNotCaptured "PRO TIP: Avoid using semver"
-  assertNotCaptured "PRO TIP: Specify"
+  assertNotCaptured "PRO TIP"
   assertCaptured "Resolved node version"
   assertCapturedSuccess
 }
@@ -59,8 +58,7 @@ testProfileCreated() {
 
 testInvalidDependency() {
   compile "invalid-dependency"
-  assertCaptured "not in the npm registry"
-  assertCapturedError 1 ""
+  assertCapturedError 1 "not in the npm registry"
 }
 
 testNodeModulesCached() {
@@ -68,13 +66,6 @@ testNodeModulesCached() {
   compile "caching" $cache
   assertCaptured "Caching node"
   assertEquals "1" "$(ls -1 $cache/ | wc -l)"
-}
-
-testShrinkwrap() {
-  compile "shrinkwrap"
-  assertCaptured "Found npm-shrinkwrap.json"
-  assertNotCaptured "PRO TIP: Use npm shrinkwrap"
-  assertCapturedSuccess
 }
 
 # Pending Tests
@@ -104,6 +95,8 @@ testShrinkwrap() {
 #   compile "invalid-node-version"
 #   assertCapturedError 1 "not found among available versions"
 # }
+
+
 
 # Utils
 
