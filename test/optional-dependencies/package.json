@@ -7,10 +7,10 @@
     "url" : "http://github.com/example/example.git"
   },
   "dependencies": {
-    "hashish": "*"
+    "less": "1.7.0"
   },
   "engines": {
-    "node": "~0.10.0"
+    "node": "0.10.x"
   },
   "scripts": {
     "start": "node foo.js"
