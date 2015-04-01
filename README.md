@@ -1,5 +1,7 @@
 # Heroku Buildpack for Node.js
 
+![heroku-buildpack-featuerd](https://cloud.githubusercontent.com/assets/51578/6953435/52e1af5c-d897-11e4-8712-35fbd4d471b1.png)
+
 This is the official [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Node.js apps. If you fork this repository, please **update this README** to explain what your fork does and why it's special.
 
 
@@ -37,7 +39,7 @@ For most Node.js apps this buildpack should work just fine.
 If, however, you're unable to deploy using this new version of the buildpack, you can get your app working again by locking it to the previous version:
 
 ```
-heroku buildpack:set BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs#v63 -a my-app
+heroku config:set BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs#v63 -a my-app
 git commit -am "empty" --allow-empty
 git push heroku master
 ```
