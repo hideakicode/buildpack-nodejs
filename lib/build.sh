@@ -1,18 +1,11 @@
 build_failed() {
-  local warn=$(cat $warnings)
   head "Build failed"
   echo ""
-  info "We're sorry this build is failing!"
-  info "Are you running into common issues?"
-  info "https://devcenter.heroku.com/articles/troubleshooting-node-deploys"
-  info ""
-  if [ "$warn" != "" ]; then
-    info "We recommend fixing these issues:"
-    echo $warn | indent
-  else
-    info "If you're stuck, please submit a ticket so we can help:"
-    info "https://help.heroku.com/"
-  fi
+  cat $warnings | indent
+  info "We're sorry this build is failing! If you can't find the issue in application code,"
+  info "please submit a ticket so we can help: https://help.heroku.com/"
+  info "You can also try reverting to our legacy Node.js buildpack:"
+  info "heroku config:set BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs#v63"
   info ""
   info "Love,"
   info "Heroku"
@@ -22,6 +15,7 @@ build_succeeded() {
   head "Build succeeded!"
   echo ""
   (npm ls --depth=0 || true) 2>/dev/null | indent
+  cat $warnings | indent
 }
 
 get_start_method() {
@@ -170,7 +164,6 @@ install_npm() {
 }
 
 function build_dependencies() {
-  restore_cache
 
   if [ "$modules_source" == "" ]; then
     info "Skipping dependencies (no source for node_modules)"
@@ -182,6 +175,7 @@ function build_dependencies() {
     npm install --unsafe-perm --quiet --userconfig $build_dir/.npmrc 2>&1 | indent
 
   else
+    restore_cache
     info "Installing node modules"
     npm install --unsafe-perm --quiet --userconfig $build_dir/.npmrc 2>&1 | indent
   fi
