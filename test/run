@@ -214,6 +214,7 @@ testModulesCheckedIn() {
   assertCaptured "(preinstall script)"
   assertCaptured "Installing any new modules"
   assertCaptured "(postinstall script)"
+  assertNotCaptured "Pruning any extraneous modules"
   assertCapturedSuccess
 }
 
