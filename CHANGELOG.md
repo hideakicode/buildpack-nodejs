@@ -2,9 +2,7 @@
 
 ## Master
 
-## v107 (2017-07-17)
-
-- Switch to using nodebin to download the yarn binary (#444)
+- Log output now differentiates between an empty cache and a new cache signature
 
 ## v106 (2017-06-19)
 
