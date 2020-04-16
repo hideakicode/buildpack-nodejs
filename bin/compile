@@ -96,6 +96,7 @@ meta_set "build-step" "init"
 [ -e "$BUILD_DIR/node_modules" ] && PREBUILD=true || PREBUILD=false
 [ -f "$BUILD_DIR/yarn.lock" ] && YARN=true || YARN=false
 [ -f "$BUILD_DIR/package-lock.json" ] && NPM_LOCK=true || NPM_LOCK=false
+YARN2=$(detect_yarn2 "$YARN" "$BUILD_DIR")
 
 ### Save build info
 features_init "nodejs" "$BUILD_DIR" "$CACHE_DIR" "$BP_DIR/features"
@@ -109,7 +110,6 @@ fail_dot_heroku_node "$BUILD_DIR"
 fail_invalid_package_json "$BUILD_DIR"
 fail_multiple_lockfiles "$BUILD_DIR"
 fail_iojs_unsupported "$BUILD_DIR"
-fail_yarn2_unsupported "$YARN" "$BUILD_DIR"
 warn_prebuilt_modules "$BUILD_DIR"
 warn_missing_package_json "$BUILD_DIR"
 
@@ -140,12 +140,48 @@ create_build_env
 [ ! "$NPM_CONFIG_CACHE" ] && NPM_CONFIG_CACHE=$(mktemp -d -t npmcache.XXXXX)
 export YARN_CACHE_FOLDER NPM_CONFIG_CACHE
 
+### Configure vendored package manager
+export YARN2_PATH
+
+if [[ "$YARN2" == "true" ]]; then
+  if [[ "$NODE_MODULES_CACHE" == "true" ]]; then
+    warn "
+      WARNING- You are using Yarn2. The buildpack won't cache, because Yarn 2 does not provide node modules.
+      "
+  fi
+  if [[ -f "$BUILD_DIR/.npmrc" ]]; then
+    warn "There is an existing .npmrc file that will not be used. All configurations are read from the .yarnrc.yml file."
+  fi
+  if [[ -f "$BUILD_DIR/.yarnrc" ]]; then
+    warn "There is an existing .yarnrc file that will not be used. All configurations are read from the .yarnrc.yml file."
+  fi
+fi
+
+if [[ "$YARN2" == "true" ]]; then
+  ### Configure Yarn 2
+  # fail for no yarnrc.yml
+  fail_missing_yarnrc_yml "$BUILD_DIR"
+
+  # get yarn_path
+  YARN2_PATH=$(get_yarn_path "$BUILD_DIR")
+
+  # fail for no yarnPath in rc
+  fail_missing_yarn_path "$BUILD_DIR" "$YARN2_PATH"
+
+  # fail for missing yarn
+  fail_missing_yarn_vendor "$BUILD_DIR" "$YARN2_PATH"
+fi
+
 install_bins() {
   local node_engine npm_engine yarn_engine npm_version node_version
 
   node_engine=$(read_json "$BUILD_DIR/package.json" ".engines.node")
   npm_engine=$(read_json "$BUILD_DIR/package.json" ".engines.npm")
   yarn_engine=$(read_json "$BUILD_DIR/package.json" ".engines.yarn")
+
+  if [[ "$YARN2" == "true" && -n "$yarn_engine" ]]; then
+    warn " You should be using a vendored version of Yarn. Heroku will ignore the engine from the package.json. "
+  fi
 
   meta_set "node-version-request" "$node_engine"
   meta_set "npm-version-request" "$npm_engine"
