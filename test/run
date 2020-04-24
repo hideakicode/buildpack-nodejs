@@ -590,24 +590,15 @@ testIoJs() {
   assertCapturedError
 }
 
-testYarn2WithCache() {
+testYarn2() {
   compile "yarn-2"
-  assertCaptured "The buildpack won't cache, because Yarn 2 does not provide node modules."
-  #expected failure with yarn incompatibility
+  assertCaptured "We are busy working to support Yarn 2, but it's not quite there yet."
   assertCapturedError
 }
 
-testYarn2WithEngine() {
-  compile "yarn-2-with-engine"
-  assertCaptured "Heroku will ignore the engine from the package.json."
-  #expected failure with yarn incompatibility
-  assertCapturedError
-}
-
-testYarn2WithYarnrc() {
-  compile "yarn-2-with-yarnrc"
-  assertCaptured "There is an existing .yarnrc file that will not be used."
-  #expected failure with yarn incompatibility
+testYarn2WithoutCache() {
+  compile "yarn-2-without-cache"
+  assertCaptured "We are busy working to support Yarn 2, but it's not quite there yet."
   assertCapturedError
 }
 
