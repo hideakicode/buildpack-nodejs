@@ -596,58 +596,17 @@ testIoJs() {
   assertCapturedError
 }
 
-###
-# Yarn 2
 testYarn2() {
   compile "yarn-2"
-  assertCaptured "The buildpack won't cache, because Yarn 2 does not provide node modules."
-  assertCaptured "skipping installations"
-  assertCaptured "skipping pruning"
-  assertCapturedSuccess
-}
-###
-
-###
-# Yarn 2 warnings
-testYarn2WithEngine() {
-  compile "yarn-2-with-engine"
-  assertCaptured "Heroku will ignore the engine from the package.json."
-  assertCapturedSuccess
-}
-
-testYarn2WithNpmrc() {
-  compile "yarn-2-with-npmrc"
-  assertCaptured "There is an existing .npmrc file that will not be used."
-  assertCapturedSuccess
-}
-
-testYarn2WithYarnrc() {
-  compile "yarn-2-with-yarnrc"
-  assertCaptured "There is an existing .yarnrc file that will not be used."
-  assertCapturedSuccess
-}
-###
-
-###
-# Yarn 2 failures
-testYarn2WithoutYarnrcYml() {
-  compile "yarn-2-without-yarnrc-yml"
-  assertCaptured "The 'yarnrc.yml' file is not found"
+  assertCaptured "We are busy working to support Yarn 2, but it's not quite there yet."
   assertCapturedError
 }
 
-testYarn2WithoutYarnPath() {
-  compile "yarn-2-without-yarn-path"
-  assertCaptured "The 'yarnPath' could not be read from the 'yarnrc.yml' file"
-  assertCapturedError
-}
-
-testYarn2WithoutYarnRelease() {
+testYarn2WithoutCache() {
   compile "yarn-2-without-cache"
-  assertCaptured "Yarn was not found"
+  assertCaptured "We are busy working to support Yarn 2, but it's not quite there yet."
   assertCapturedError
 }
-###
 
 testSpecificVersion() {
   compile "specific-version"
