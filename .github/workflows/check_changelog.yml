@@ -1,7 +1,6 @@
 name: Check Changelog
-on:
- pull_request:
-  types: [opened, reopened, edited, synchronize]
+
+on: [pull_request]
 
 jobs:
  build:
