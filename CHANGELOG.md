@@ -1,18 +1,13 @@
 # Node.js Buildpack Changelog
 
-## feature: Yarn 2 support
-- Add warning for detection of Yarn 2 usage with caching ([#755](https://github.com/heroku/heroku-buildpack-nodejs/pull/755))
-- Add warning for Yarn 2 usage, warn user of ignoring engine from package.json ([#761](https://github.com/heroku/heroku-buildpack-nodejs/pull/761))
-- Add warning for if .npmrc file exists when using Yarn 2 ([#764](https://github.com/heroku/heroku-buildpack-nodejs/pull/764))
-- Add warning for if .yarnrc file exists when using Yarn 2 ([#768](https://github.com/heroku/heroku-buildpack-nodejs/pull/768))
-- Add checks for Yarn 2 ([#759](https://github.com/heroku/heroku-buildpack-nodejs/pull/759))
-- Turn off production and ignore-script flags for Yarn 2 and add global vendored yarn alias ([775] (https://github.com/heroku/heroku-buildpack-nodejs/pull/775))
-- Set `$YARN` to false when `$YARN2` is true ([#776](https://github.com/heroku/heroku-buildpack-nodejs/pull/776))
-- Skip writing to the cache and pruning of the node modules when Yarn 2 is used ([#785](https://github.com/heroku/heroku-buildpack-nodejs/pull/785))
-- Test use of packages in `.yarn/release` directory ([#786](https://github.com/heroku/heroku-buildpack-nodejs/pull/786))
-
 ## master
+
+## v172 (2020-05-28)
 - display yarn engine log to build output when engine is provided in monorepo ([#771](https://github.com/heroku/heroku-buildpack-nodejs/pull/771))
+- move proxy issues section from readme to dev center ([#778](https://github.com/heroku/heroku-buildpack-nodejs/pull/778))
+- warn when NO_PROXY is not set to "amazonaws.com" and HTTP_PROXY or HTTPS_PROXY is set ([#782](https://github.com/heroku/heroku-buildpack-nodejs/pull/782))
+- add heroku cleanup script ([#788](https://github.com/heroku/heroku-buildpack-nodejs/pull/788))
+- add a build step for cleanup script and output to log file ([#790](https://github.com/heroku/heroku-buildpack-nodejs/pull/790))
 
 ## v171 (2020-04-27)
 - Update Travis badge to `master` and other changes in README ([#753](https://github.com/heroku/heroku-buildpack-nodejs/pull/753))

@@ -62,12 +62,7 @@ install_yarn() {
     tar xzf /tmp/yarn.tar.gz -C "$dir" --strip 1
   fi
   chmod +x "$dir"/bin/*
-
-  if $YARN2; then
-    echo "Using yarn $(yarn --version)"
-  else
-    echo "Installed yarn $(yarn --version)"
-  fi
+  echo "Installed yarn $(yarn --version)"
 }
 
 install_nodejs() {

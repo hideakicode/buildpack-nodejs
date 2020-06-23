@@ -114,7 +114,11 @@ fail_iojs_unsupported() {
 }
 
 fail_yarn2_unsupported() {
-  local uses_yarn2="$1"
+  local uses_yarn="$1"
+  local build_dir="$2"
+  local uses_yarn2
+
+  uses_yarn2=$(detect_yarn2 "$uses_yarn" "$build_dir")
 
   if [[ "$uses_yarn2" == "true" ]]; then
     mcount "failures.yarn2-unsupported"
@@ -361,78 +365,6 @@ fail_invalid_semver() {
   fi
 }
 
-# Yarn 2 failures
-
-fail_missing_yarnrc_yml() {
-  local build_dir="$1"
-
-  if [[ ! -f "$build_dir/.yarnrc.yml" ]]; then
-    mcount "failures.missing-yarnrc-yml"
-    meta_set "failure" "missing-yarnrc-yml"
-    header "Build failed"
-    warn "The 'yarnrc.yml' file is not found
-
-      It looks like the 'yarnrc.yml' file is missing from this project. Please
-      make sure this file is checked into version control and made available to
-      Heroku.
-
-      To generate 'yarnrc.yml', make sure Yarn 2 is installed on your local
-      machine and set the version in your project directory with:
-
-       $ yarn set version berry
-      "
-    fail
-  fi
-}
-
-fail_missing_yarn_path() {
-  local build_dir="$1"
-  local yarn_path="$2"
-
-  if [[ "$yarn_path" == "" ]]; then
-    mcount "failures.missing-yarn-path"
-    meta_set "failure" "missing-yarn-path"
-    header "Build failed"
-    warn "The 'yarnPath' could not be read from the 'yarnrc.yml' file
-
-      It looks like 'yarnrc.yml' is missing the 'yarnPath' value, which is needed
-      to identify the location of yarn for this build.
-
-      To regenerate 'yarnrc.yml' with the 'yarnPath' value set, make sure Yarn 2
-      is installed on your local machine and set the version in your project
-      directory with:
-
-       $ yarn set version berry
-      "
-    fail
-  fi
-}
-
-fail_missing_yarn_vendor() {
-  local build_dir="$1"
-  local yarn_path="$2"
-
-  if [[ ! -f "$build_dir/$yarn_path" ]]; then
-    mcount "failures.missing-yarn-vendor"
-    meta_set "failure" "missing-yarn-vendor"
-    header "Build failed"
-    warn "Yarn was not found
-
-      It looks like yarn is missing from $yarn_path, which is needed to continue
-      this build on Heroku. Yarn 2 recommends vendoring Yarn under the '.yarn/releases'
-      directory, so remember to check the '.yarn' directory into version control
-      to use during builds.
-
-      To generate the '.yarn' directory correctly, make sure Yarn 2 is installed
-      on your local machine and run the following in your project directory:
-
-       $ yarn install
-       $ yarn set version berry
-      "
-    fail
-  fi
-}
-
 log_other_failures() {
   local log_file="$1"
   if grep -qi "sh: 1: .*: not found" "$log_file"; then
@@ -675,6 +607,12 @@ warn() {
   echo ""
 }
 
+warn_aws_proxy() {
+  if { [[ -n "$HTTP_PROXY" ]] || [[ -n "$HTTPS_PROXY" ]]; } && [[ "$NO_PROXY" != "amazonaws.com" ]]; then
+    warn "Your build may fail if NO_PROXY is not set to amazonaws.com" "https://devcenter.heroku.com/articles/troubleshooting-node-deploys#aws-proxy-error"
+  fi
+}
+
 warn_node_engine() {
   local node_engine=${1:-}
   if [ "$node_engine" == "" ]; then
@@ -692,7 +630,7 @@ warn_node_engine() {
 warn_prebuilt_modules() {
   local build_dir=${1:-}
   if [ -e "$build_dir/node_modules" ]; then
-    warning "node_modules checked into source control" "https://blog.heroku.com/node-habits-2016#9-only-git-the-important-bits"
+    warning "node_modules checked into source control" "https://devcenter.heroku.com/articles/node-best-practices#only-git-the-important-bits"
     mcount 'warnings.modules.prebuilt'
     meta_set "checked-in-node-modules" "true"
   else
