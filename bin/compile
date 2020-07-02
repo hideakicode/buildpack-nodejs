@@ -174,7 +174,7 @@ install_bins() {
   # Download yarn if there is a yarn.lock file or if the user
   # has specified a version of yarn under "engines". We'll still
   # only install using yarn if there is a yarn.lock file
-  if $YARN || [  "$yarn_engine" ]; then
+  if $YARN || [ -n "$yarn_engine" ]; then
     meta_set "build-step" "install-yarn"
     monitor "install-yarn-binary" install_yarn "$BUILD_DIR/.heroku/yarn" "$yarn_engine"
   fi
@@ -201,7 +201,9 @@ restore_cache() {
   cache_directories="$(get_cache_directories "$BUILD_DIR")"
 
   if $YARN; then
-    if [ -e "$BUILD_DIR/node_modules" ]; then
+    if [ -e "$BUILD_DIR/node_modules" ] && ${SKIP_NODE_MODULES_CHECK:-true}; then
+      echo "Keeping existing node_modules because SKIP_NODE_MODULES_CHECK=${SKIP_NODE_MODULES_CHECK}"
+    elif [ -e "$BUILD_DIR/node_modules" ]; then
       warn "node_modules checked into source control" "https://blog.heroku.com/node-habits-2016#9-only-git-the-important-bits"
       rm -rf "$BUILD_DIR/node_modules"
     fi
@@ -299,10 +301,6 @@ prune_devdependencies() {
     npm_prune_devdependencies "$BUILD_DIR"
   fi
 }
-
-if [[ -f "$BUILD_DIR/heroku-buildpack-features" ]] || [[ "$YARN_CACHE" != "false" ]]; then
-  yarn_cache_exist=true
-fi
 
 # if we are using yarn
 #   and in the new feature
