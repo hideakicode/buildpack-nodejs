@@ -134,12 +134,17 @@ mkdir -p "$BUILD_DIR/.heroku/node/"
 cd "$BUILD_DIR"
 create_env # can't pipe the whole thing because piping causes subshells, preventing exports
 list_node_config | output "$LOG_FILE"
-create_build_env
+create_build_env "$YARN"
 
 ### Configure package manager cache directories
 [ ! "$YARN_CACHE_FOLDER" ] && YARN_CACHE_FOLDER=$(mktemp -d -t yarncache.XXXXX)
 [ ! "$NPM_CONFIG_CACHE" ] && NPM_CONFIG_CACHE=$(mktemp -d -t npmcache.XXXXX)
 export YARN_CACHE_FOLDER NPM_CONFIG_CACHE
+
+if [ $(features_get "cache-native-yarn-cache") == "false" ]; then
+  warn "'cache-native-yarn-cache' flag no longer used. Set an environment variable named YARN_CACHE to false to opt out of yarn caching."
+  YARN_CACHE=false
+fi
 
 install_bins() {
   local node_engine npm_engine yarn_engine npm_version node_version
@@ -201,9 +206,7 @@ restore_cache() {
   cache_directories="$(get_cache_directories "$BUILD_DIR")"
 
   if $YARN; then
-    if $PREBUILD && [[ "$SKIP_NODE_MODULES_CHECK" == "true" ]]; then
-      echo "Keeping existing node_modules because SKIP_NODE_MODULES_CHECK=${SKIP_NODE_MODULES_CHECK}"
-    elif $PREBUILD; then
+    if [ -e "$BUILD_DIR/node_modules" ]; then
       warn "node_modules checked into source control" "https://blog.heroku.com/node-habits-2016#9-only-git-the-important-bits"
       rm -rf "$BUILD_DIR/node_modules"
     fi
@@ -306,7 +309,7 @@ prune_devdependencies() {
 #   and in the new feature
 #   and we're using the default cache directories
 # then save off the cache after we prune out devDepenencies
-if [[ "$YARN" == "true" ]] && [[ $(features_get "cache-native-yarn-cache") == "true" ]] && [[ "$(get_cache_directories "$BUILD_DIR")" == "" ]]; then
+if [[ "$YARN" == "true" ]] && [[ "$YARN_CACHE" == "true" ]] && [[ "$(get_cache_directories "$BUILD_DIR")" == "" ]]; then
   meta_set "build-step" "prune-dependencies"
   header "Pruning devDependencies" | output "$LOG_FILE"
   prune_devdependencies | output "$LOG_FILE"
