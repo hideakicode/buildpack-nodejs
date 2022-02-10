@@ -22,8 +22,7 @@ detect_yarn_2() {
 
 has_yarn_cache() {
   local build_dir="$1"
-  local yarn_cache="$build_dir/.yarn/cache"
-  [[ -d "$yarn_cache" ]] && [[ -n '$(ls -A "$yarn_cache")' ]]
+  [[ -d "$build_dir/.yarn/cache" ]]
 }
 
 has_yarn_workspace_plugin_installed() {
@@ -34,14 +33,6 @@ has_yarn_workspace_plugin_installed() {
 get_yarn_path() {
   local build_dir="$1"
   $YQ r "$build_dir/.yarnrc.yml" yarnPath 2>&1
-}
-
-use_yarn_app_cache() {
-  local build_dir="$1"
-  if has_yarn_cache "$build_dir" || ! node_modules_enabled "$build_dir"; then
-    return
-  fi
-  false
 }
 
 node_modules_enabled() {
